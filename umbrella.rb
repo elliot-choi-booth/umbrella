@@ -5,8 +5,6 @@ require "dotenv/load"
 
 pirate_weather_api_key = ENV.fetch("PIRATE_WEATHER_KEY")
 
-pirate_weather_url = "https://api.pirateweather.net/forecast/" + pirate_weather_api_key + "/41.8887,-87.6355"
-
 pp "Where are you located?"
 
 user_location = gets.chomp.gsub(" ", "%20")
@@ -30,5 +28,20 @@ geo = first_result.fetch("geometry")
 
 location = geo.fetch("location")
 
-pp latitude = location.fetch("lat")
-pp longitude = location.fetch("lng")
+latitude = location.fetch("lat")
+longitude = location.fetch("lng")
+
+pirate_weather_url = "https://api.pirateweather.net/forecast/" + pirate_weather_api_key + "/" + latitude.to_s + "," + longitude.to_s
+
+pirate_maps_response = HTTP.get(pirate_weather_url)
+
+pm_raw_response = pirate_maps_response.to_s
+
+pm_parsed = JSON.parse(pm_raw_response)
+
+currently = pm_parsed.fetch("currently")
+
+summary = currently.fetch("summary")
+temperature = currently.fetch("temperature")
+
+pp "It is currently #{temperature} degrees outside, and #{summary.downcase}."
